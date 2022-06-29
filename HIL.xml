@@ -1,0 +1,59 @@
+<mujoco model="1d_impedance_match">
+
+    <asset>
+        <texture name="skybox" type="skybox" builtin="gradient" rgb1=".4 .6 .8" rgb2="0 0 0" width="800" height="800" mark="random" markrgb="1 1 1"/>
+        <texture name="texplane" type="2d" builtin="checker" rgb1=".25 .25 .25" rgb2=".3 .3 .3" width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
+        <material name="matplane" reflectance="0.3" texture="texplane" texrepeat="1 1" texuniform="true"/>
+    </asset>
+
+    <visual>
+        <headlight ambient=".4 .4 .4" diffuse=".8 .8 .8" specular="0.1 0.1 0.1"/>
+        <map znear=".01"/>
+        <quality shadowsize="2048"/>
+    </visual>
+
+    <option 
+        timestep="0.001" integrator="RK4">
+    </option>
+
+    <compiler angle="radian"/>
+
+    <actuator>
+        <!-- CAN SELECT POSITION, VELOCITY OR MOTOR ACTUATOR; ADJUST CONTROL RANGE AS DESIRED -->
+        <motor ctrllimited="true" ctrlrange="0 3" joint="joint:1" name="actuator:linear_actuator_peg"/>
+    </actuator>
+
+    <sensor>
+        <force name='force_sensor' site='force_sensor'/>
+    </sensor>
+
+    <worldbody>
+        <geom name="floor" pos="0 0 0" condim = "1" size="0 0 1" type="plane" material="matplane"/>
+
+        <body name="peg_base" pos="-1. 0 0.32" quat="0.7071068 0 0.7071068 0">
+            <joint type="slide" pos="0 0 0" axis="0 0 1" name="joint:1" damping="1" stiffness="0" limited="false" range="0 0.1"/>
+            <inertial pos="0 0 0" mass="1.0" diaginertia="0.001 0.001 0.001"/>
+            <geom size="0.25 0.05" type="cylinder" condim = "1" contype="1" conaffinity="1" group="1" rgba="0.7 0.7 0.7 1" name="peg_base"/>
+
+            <body name="peg_stem" pos="0 0 0.3">
+                <geom size="0.075 0.25" type="cylinder" condim = "1" contype="1" conaffinity="1" group="1" rgba="0.7 0.7 0.7 1" name="peg_stem"/>
+                <!-- <site name='peg:contact_loc' pos="0 0 0.025" size='0.005 0.005 0.005' rgba='0 1 0 1' type='sphere' group='1'/> -->
+            </body>
+        </body>
+
+        <body name="nozzle" pos="0.13 0 0.25" quat="1 0 0 0">
+            <!-- SELECT EITHER SLIDE OR FREE JOINT TYPE -->
+            <joint type="slide" pos="0 0 0" axis="1 0 0" name="joint:2" damping="6" stiffness="20" />
+            <!-- <freejoint/> -->
+            <inertial pos="0 0 0" mass="1.0" diaginertia="0.001 0.001 0.001"/>
+            <!-- <site name='torque_sensor' pos="0 0 -0.005" size='0.005 0.005 0.005' rgba='0 0 1 1' type='sphere' group='1'/>             -->
+            <geom size="0.15 0.15 0.15" type="box" condim = "1" contype="1" conaffinity="1" group="1" rgba="0.7 0.7 0.7 1" name="box"/>
+            <body name="nozzle2" pos="-0.315 0 0.0" quat="1 0 0 0">
+                <inertial pos="0 0 0" mass="1.0" diaginertia="0.001 0.001 0.001"/>
+                <site name='force_sensor' pos="0 0 0" size='0.005 0.005 0.005' rgba='0 0 1 1' type='sphere' group='1'/>
+                <geom size="0.15 0.15 0.15" type="box" condim = "1" contype="1" conaffinity="1" group="1" rgba="0.7 0.7 0.7 1" name="box2"/>
+            </body>
+        </body>
+
+    </worldbody>
+</mujoco>
