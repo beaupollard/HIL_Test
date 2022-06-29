@@ -49,7 +49,7 @@ sim.step()
 forcec = []
 qpegc = []
 vpegc=[]
-dFrec=[]
+time=[]
 k1=sim.model.jnt_stiffness[-1]
 b1=sim.model.dof_damping[-1]
 m1=sim.model.body_mass[-1]
@@ -86,11 +86,13 @@ while sim.data.time<15.:
     qpegc.append(x2)
     vpegc.append(dx2dt)
     ctrl.append(sim.data.ctrl[1])
+    time.append(sim.data.time)
 
 
-y = butter_lowpass_filter(np.array(forcec), 10, 1/dt, 6)
-plt.plot(qpeg,'b')
-plt.plot(qpegc,'r')
+y = butter_lowpass_filter(np.array(forcec), 10, 1/dt, 5)
+plt.plot(time,force,'b')
+plt.plot(time,y,'--r')
+plt.legend(['Ground Truth','Impedance Matching'])
 plt.show()
 
 # while sim.data.time<15.:
